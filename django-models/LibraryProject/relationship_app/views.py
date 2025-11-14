@@ -11,7 +11,7 @@ from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.detail import DetailView     # required literal form
 from .models import Library                            # required literal form
-
+from django.contrib.auth.decorators import permission_required
 # Your other imports
 from django.views.generic import DetailView            # still ok to keep
 from .models import Author, Book, Librarian, UserProfile
