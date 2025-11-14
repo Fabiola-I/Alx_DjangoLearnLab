@@ -28,7 +28,9 @@ urlpatterns = [
     path('accounts/register/', views.register, name='register'),  # <-- uses views.register now
     path('accounts/login/', LoginView.as_view(template_name='login.html'), name='login'),
     path('accounts/logout/', LogoutView.as_view(template_name='logout.html'), name='logout'),
-
+    # Add these lines inside your urlpatterns in urls.py
+    path('book/add/', views.add_book, name='add_book'),       # contains "add_book/"
+    path('book/<int:pk>/edit/', views.edit_book, name='edit_book'),  # contains "edit_book/"
     # Library detail
     path('library/<int:pk>/', LibraryDetailView.as_view(), name='library_detail'),
 ]
