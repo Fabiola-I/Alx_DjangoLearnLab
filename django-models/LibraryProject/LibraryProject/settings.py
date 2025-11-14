@@ -21,7 +21,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-cb^%0kmyu8#7x7^y97gy9j-r-%(wb%e0jglnaiac%f^$-s4g$)'
+# LibraryProject/settings.py (Add/Verify these lines)
 
+LOGIN_REDIRECT_URL = '/'      # Redirects after successful login
+LOGOUT_REDIRECT_URL = 'login' # Redirects after successful logout
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 

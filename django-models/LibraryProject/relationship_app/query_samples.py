@@ -1,41 +1,69 @@
+# django-models/LibraryProject/relationship_app/query_samples.py
+# This script is intended to be run using 'python manage.py shell'
+
 from relationship_app.models import Author, Book, Library, Librarian
 
-# Clear existing data to avoid duplicates
-Book.objects.all().delete()
-Author.objects.all().delete()
-Library.objects.all().delete()
-Librarian.objects.all().delete()
+def setup_initial_data():
+    """Deletes existing data and creates new test data."""
+    print("--- Setting up initial data ---")
+    
+    # Clean up old data for repeatable testing
+    Author.objects.all().delete()
+    
+    # Authors & Books (ForeignKey Test)
+    author_a, _ = Author.objects.get_or_create(name='Jane Austen')
+    author_b, _ = Author.objects.get_or_create(name='Mark Twain')
 
-# Create Authors
-author1 = Author.objects.create(name="George Orwell")
-author2 = Author.objects.create(name="J.K. Rowling")
+    book_pnp, _ = Book.objects.get_or_create(title='Pride and Prejudice', author=author_a)
+    book_huck, _ = Book.objects.get_or_create(title='Huckleberry Finn', author=author_b)
+    book_sense, _ = Book.objects.get_or_create(title='Sense and Sensibility', author=author_a)
+    
+    # Library & Librarian (ManyToMany & OneToOne Tests)
+    library_central, _ = Library.objects.get_or_create(name='Main City Library')
+    # Link books to the library (ManyToManyField)
+    library_central.books.set([book_pnp, book_huck]) 
+    Librarian.objects.get_or_create(name='Sarah Connor', library=library_central)
+    
+    print("Data setup complete.")
 
-# Create Books
-book1 = Book.objects.create(title="1984", author=author1)
-book2 = Book.objects.create(title="Animal Farm", author=author1)
-book3 = Book.objects.create(title="Harry Potter 1", author=author2)
+def run_queries():
+    """Executes the three required sample queries."""
+    print("\n--- Running Sample Queries ---")
 
-# Create Library
-library1 = Library.objects.create(name="Central Library")
-library1.books.set([book1, book2, book3])
+    # 1. Query all books by a specific author (Checks: "Query all books by a specific author.")
+    print("\n**1. Books by Jane Austen (ForeignKey reverse lookup):**")
+    try:
+        author = Author.objects.get(name='Jane Austen')
+        # Use the default reverse manager: book_set
+        austin_books = author.book_set.all()
+        for book in austin_books:
+            print(f"- {book.title}")
+    except Author.DoesNotExist:
+        print("Author not found.")
 
-# Create Librarian
-librarian1 = Librarian.objects.create(name="Alice", library=library1)
+    # 2. List all books in a library (Checks: "List all books in a library.")
+    print("\n**2. Books in Main City Library (ManyToManyField lookup):")
+    try:
+        library = Library.objects.get(name='Main City Library')
+        # Direct access to the ManyToMany field 'books'
+        library_books = library.books.all()
+        for book in library_books:
+            print(f"- {book.title}")
+    except Library.DoesNotExist:
+        print("Library not found.")
+        
+    # 3. Retrieve the librarian for a library (Checks: "Retrieve the librarian for a library.")
+    print("\n**3. Librarian for Main City Library (OneToOne reverse lookup):**")
+    try:
+        library = Library.objects.get(name='Main City Library')
+        # Reverse lookup uses the model name in lowercase: 'librarian'
+        librarian = library.librarian
+        print(f"Librarian: {librarian.name}")
+    except Library.DoesNotExist:
+        print("Library not found.")
+    except Librarian.DoesNotExist:
+        print("Librarian not found for this library.")
 
-# -------------------------
-# Run queries
-# -------------------------
-
-# 1️⃣ Query all books by George Orwell
-author = Author.objects.get(name="George Orwell")
-books_by_author = author.books.all()
-print(f"Books by {author.name}: {[book.title for book in books_by_author]}")
-
-# 2️⃣ List all books in Central Library
-library = Library.objects.get(name="Central Library")
-books_in_library = library.books.all()
-print(f"Books in {library.name}: {[book.title for book in books_in_library]}")
-
-# 3️⃣ Retrieve the librarian for Central Library
-librarian = library.librarian
-print(f"Librarian of {library.name}: {librarian.name}")
+if __name__ == '__main__':
+    setup_initial_data()
+    run_queries()
