@@ -1,4 +1,5 @@
 # django-models/LibraryProject/relationship_app/urls.py (FINAL COMPLETE)
+
 from django.urls import path
 from . import views
 from .views import LibraryDetailView
@@ -19,8 +20,9 @@ urlpatterns = [
     path('librarian_desk/', views.librarian_view, name='librarian_desk'),
     path('member_dashboard/', views.member_view, name='member_dashboard'),
     
-    # --- Task 4: Custom Permissions URLs (Checks for updated urls paths) ---
+    # --- Task 4: Custom Permissions URLs ---
+    # We're using 'books/add/' etc., which is the common pattern.
     path('books/add/', views.book_add_view, name='book_add'),
     path('books/edit/<int:pk>/', views.book_edit_view, name='book_edit'),
     path('books/delete/<int:pk>/', views.book_delete_view, name='book_delete'),
-]
+    ]
