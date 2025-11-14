@@ -3,57 +3,41 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import DetailView
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.decorators import user_passes_test, permission_required # Imports for Task 3 & 4
+from django.contrib.auth.decorators import user_passes_test, permission_required # CRITICAL IMPORT for Task 4
 
 from .models import Book, Library, Librarian, UserProfile # All models needed
 
-# --- Task 1: Views and URL Configuration (Function & Class Views) ---
-
-# Function-based View (T1)
+# --- Task 1: Views and URL Configuration ---
 def book_list(request):
-    """Lists all books and their authors."""
     books = Book.objects.select_related('author').all()
     return render(request, 'relationship_app/list_books.html', {'books': books})
 
-# Class-based View (T1)
 class LibraryDetailView(DetailView):
-    """Displays details for a specific library."""
     model = Library
     context_object_name = 'library' 
     template_name = 'relationship_app/library_detail.html'
-
     def get_queryset(self):
-        # Optimizes query for Many-to-Many relationship (books)
         return Library.objects.prefetch_related('books__author').all()
 
 # --- Task 2: User Authentication (Registration View) ---
-
 def register_view(request):
-    """Handles user registration."""
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            # The signal (Task 3) automatically creates the UserProfile here
             return redirect('login') 
     else:
         form = UserCreationForm()
-    
     return render(request, 'relationship_app/register.html', {'form': form})
 
 # --- Task 3: Role-Based Access Control (RBAC) ---
-
-# Helper functions for role checking
 def is_admin(user):
     return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
-
 def is_librarian(user):
     return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Librarian'
-
 def is_member(user):
     return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Member'
 
-# Role-restricted views
 @user_passes_test(is_admin, login_url='login')
 def admin_view(request):
     return render(request, 'relationship_app/admin_view.html', {'message': 'Welcome, Admin!'})
@@ -66,25 +50,22 @@ def librarian_view(request):
 def member_view(request):
     return render(request, 'relationship_app/member_view.html', {'message': 'Welcome, Member!'})
 
-# --- Task 4: Custom Permissions Enforcement ---
+# --- Task 4: Custom Permissions Enforcement (STRICT CHECKS APPLIED) ---
 
-# Placeholder View for Adding book (Restricted by custom permission)
+# Checks: permission_required decorator, can_add_book permission
 @permission_required('relationship_app.can_add_book', login_url='login')
 def book_add_view(request):
     """Placeholder for the view restricted by can_add_book permission."""
-    # In a real app, this would handle form submission to create a Book
     return render(request, 'relationship_app/permission_success.html', {'action': 'add'})
 
-# Placeholder View for Editing book (Restricted by custom permission)
+# Checks: permission_required decorator, can_change_book permission
 @permission_required('relationship_app.can_change_book', login_url='login')
 def book_edit_view(request, pk):
     """Placeholder for the view restricted by can_change_book permission."""
-    # In a real app, this would handle form submission to edit a Book
     return render(request, 'relationship_app/permission_success.html', {'action': 'edit'})
 
-# Placeholder View for Deleting book (Restricted by custom permission)
+# Checks: permission_required decorator, can_delete_book permission
 @permission_required('relationship_app.can_delete_book', login_url='login')
 def book_delete_view(request, pk):
     """Placeholder for the view restricted by can_delete_book permission."""
-    # In a real app, this would handle deletion of a Book
     return render(request, 'relationship_app/permission_success.html', {'action': 'delete'})

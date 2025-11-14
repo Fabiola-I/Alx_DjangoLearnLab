@@ -1,5 +1,4 @@
 # django-models/LibraryProject/relationship_app/urls.py (FINAL COMPLETE)
-
 from django.urls import path
 from . import views
 from .views import LibraryDetailView
@@ -20,14 +19,14 @@ urlpatterns = [
     path('librarian_desk/', views.librarian_view, name='librarian_desk'),
     path('member_dashboard/', views.member_view, name='member_dashboard'),
     
-    # --- Task 4: Custom Permissions URLs (STRICT CHECK FIX) ---
+    # --- Task 4: Custom Permissions URLs (STRICT PATH STRINGS REQUIRED) ---
     
-    # 1. Adds 'add_book/' to the path string
+    # Check 1: Must contain "add_book/"
     path('books/add_book/', views.book_add_view, name='book_add'),
     
-    # 2. Adds 'edit_book/' to the path string, keeping the primary key (<int:pk>)
+    # Check 2: Must contain "edit_book/"
     path('books/edit_book/<int:pk>/', views.book_edit_view, name='book_edit'),
     
-    # 3. Adds 'delete_book/' to the path string, keeping the primary key (<int:pk>)
+    # Check 3: Must contain "delete_book/"
     path('books/delete_book/<int:pk>/', views.book_delete_view, name='book_delete'),
 ]

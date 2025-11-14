@@ -1,4 +1,4 @@
-# django-models/LibraryProject/relationship_app/models.py (FINAL COMPLETE)
+# django-models/LibraryProject/relationship_app/models.py
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -39,7 +39,7 @@ class Librarian(models.Model):
     def __str__(self):
         return self.name
 
-# --- Task 3: User Profile and RBAC (Existing) ---
+# --- Task 3: User Profile and RBAC ---
 
 ROLE_CHOICES = (
     ('Admin', 'Admin'),
