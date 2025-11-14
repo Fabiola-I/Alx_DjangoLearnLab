@@ -2,7 +2,13 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 # Savan checker required imports
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.detail import DetailView     # required literal form
 from .models import Library                            # required literal form
 
@@ -66,3 +72,24 @@ def edit_book_view(request):
 @permission_required('relationship_app.can_delete_book')
 def delete_book_view(request):
     return render(request, 'relationship_app/delete_book.html')
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # log the user in immediately
+            return redirect('relationship_app:list_books')  # redirect after signup
+    else:
+        form = UserCreationForm()
+    
+    return render(request, 'relationship_app/register.html', {'form': form})
+def register(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # log in the user immediately
+            return redirect('relationship_app:list_books')  # redirect after registration
+    else:
+        form = UserCreationForm()
+    return render(request, 'relationship_app/register.html', {'form': form})
