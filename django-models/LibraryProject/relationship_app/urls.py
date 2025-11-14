@@ -20,9 +20,14 @@ urlpatterns = [
     path('librarian_desk/', views.librarian_view, name='librarian_desk'),
     path('member_dashboard/', views.member_view, name='member_dashboard'),
     
-    # --- Task 4: Custom Permissions URLs ---
-    # We're using 'books/add/' etc., which is the common pattern.
-    path('books/add/', views.book_add_view, name='book_add'),
-    path('books/edit/<int:pk>/', views.book_edit_view, name='book_edit'),
-    path('books/delete/<int:pk>/', views.book_delete_view, name='book_delete'),
-    ]
+    # --- Task 4: Custom Permissions URLs (STRICT CHECK FIX) ---
+    
+    # 1. Adds 'add_book/' to the path string
+    path('books/add_book/', views.book_add_view, name='book_add'),
+    
+    # 2. Adds 'edit_book/' to the path string, keeping the primary key (<int:pk>)
+    path('books/edit_book/<int:pk>/', views.book_edit_view, name='book_edit'),
+    
+    # 3. Adds 'delete_book/' to the path string, keeping the primary key (<int:pk>)
+    path('books/delete_book/<int:pk>/', views.book_delete_view, name='book_delete'),
+]
