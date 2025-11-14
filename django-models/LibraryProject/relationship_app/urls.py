@@ -1,6 +1,7 @@
+# LibraryProject/relationship_app/urls.py
 from django.urls import path
-from django.contrib.auth.views import LoginView, LogoutView
 from .views import list_books, book_detail, register
+from django.contrib.auth.views import LoginView, LogoutView
 from .admin_view import admin_view
 from .librarian_view import librarian_view
 from .member_view import member_view
@@ -20,11 +21,11 @@ urlpatterns = [
 
     # Book management
     path('book/add/', list_books, name='add_book'),  # adjust if you have add_book view
-    path('book/<int:pk>/edit/', list_books, name='edit_book'),  # adjust
-    path('book/<int:pk>/delete/', list_books, name='delete_book'),  # adjust
+    path('book/<int:pk>/edit/', list_books, name='edit_book'),  # adjust accordingly
+    path('book/<int:pk>/delete/', list_books, name='delete_book'),  # adjust accordingly
 
-    # Auth views
-    path('login/', LoginView.as_view(template_name="login.html"), name='login'),
-    path('logout/', LogoutView.as_view(template_name="logout.html"), name='logout'),
-    path('register/', register, name='register'),
+    # Authentication
+    path('accounts/register/', register, name='register'),  # <--- THIS IS REQUIRED
+    path('accounts/login/', LoginView.as_view(template_name="login.html"), name='login'),
+    path('accounts/logout/', LogoutView.as_view(template_name="logout.html"), name='logout'),
 ]
