@@ -6,7 +6,7 @@ from .admin_view import admin_view
 from .librarian_view import librarian_view
 from .member_view import member_view
 from .views import LibraryDetailView
-
+from .views import list_books, book_detail, add_book, edit_book, delete_book, register
 app_name = 'relationship_app'
 
 urlpatterns = [
@@ -18,7 +18,7 @@ urlpatterns = [
     path('book/add/', add_book, name='add_book'),
     path('book/<int:pk>/edit/', edit_book, name='edit_book'),
     path('book/<int:pk>/delete/', delete_book, name='delete_book'),
-
+      path('books/<int:pk>/', book_detail, name='book_detail'),
     # Role-based views
     path('role/admin/', admin_view, name='admin_view'),
     path('role/librarian/', librarian_view, name='librarian_view'),

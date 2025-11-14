@@ -13,6 +13,8 @@ from django.views.generic.detail import DetailView     # required literal form
 from .models import Library                            # required literal form
 from django.contrib.auth.decorators import permission_required
 # Your other imports
+from django.shortcuts import render, get_object_or_404
+from .models import Book
 from django.views.generic import DetailView            # still ok to keep
 from .models import Author, Book, Librarian, UserProfile
 from django.contrib.auth.models import User
@@ -36,6 +38,9 @@ class LibraryDetailView(DetailView):
 # ----------------------------
 # Role-Based Views
 # ----------------------------
+def book_detail(request, pk):
+    book = get_object_or_404(Book, pk=pk)
+    return render(request, 'relationship_app/book_detail.html', {'book': book})
 def is_admin(user):
     return hasattr(user, 'profile') and user.profile.role == 'Admin'
 
