@@ -1,10 +1,11 @@
 # LibraryProject/relationship_app/urls.py
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
-from .views import list_books, book_detail, add_book, edit_book, delete_book, register, LibraryDetailView
+from .views import list_books, book_detail, add_book, edit_book, delete_book, register
 from .admin_view import admin_view
 from .librarian_view import librarian_view
 from .member_view import member_view
+from .views import LibraryDetailView
 
 app_name = 'relationship_app'
 
