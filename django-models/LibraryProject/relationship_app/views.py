@@ -9,13 +9,14 @@ from .models import Library                            # required literal form
 from django.views.generic import DetailView            # still ok to keep
 from .models import Author, Book, Librarian, UserProfile
 from django.contrib.auth.models import User
+from django.shortcuts import render
+from .models import Book
 from .forms import BookForm
 # ----------------------------
+
 def list_books(request):
-    books = Book.objects.all()  # This is required by the Savan checker
-    return render(request, 'relationship_app/list_books.html', {'books': books})
-
-
+    books = Book.objects.all()
+    return render(request, "relationship_app/list_books.html", {"books": books})
 # ----------------------------
 # Class-Based View: library detail
 # ----------------------------
