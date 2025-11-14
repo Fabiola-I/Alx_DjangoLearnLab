@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-cb^%0kmyu8#7x7^y97gy9j-r-%(wb%e0jglnaiac%f^$-s4g$)'
 # LibraryProject/settings.py (Add/Verify these lines)
 
-LOGIN_REDIRECT_URL = '/'      # Redirects after successful login
-LOGOUT_REDIRECT_URL = 'login' # Redirects after successful logout
-# SECURITY WARNING: don't run with debug turned on in production!
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
 DEBUG = True
 
 ALLOWED_HOSTS = []
@@ -40,9 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'bookshelf',
+    
     'relationship_app',
-]
+    'bookshelf',]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

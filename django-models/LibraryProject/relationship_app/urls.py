@@ -1,32 +1,26 @@
-# django-models/LibraryProject/relationship_app/urls.py (FINAL COMPLETE)
 from django.urls import path
 from . import views
+from .admin_view import admin_view
+from .librarian_view import librarian_view
+from .member_view import member_view
 from .views import LibraryDetailView
-from django.contrib.auth import views as auth_views 
+from . import auth_views
+app_name = 'relationship_app'
 
 urlpatterns = [
-    # --- Task 1 URLs ---
-    path('books/', views.book_list, name='book_list'), 
-    path('library/<int:pk>/', LibraryDetailView.as_view(), name='library_detail'),
+    path('books/', views.list_books, name='list_books'),            # function-based view
+    path('library/<int:pk>/', LibraryDetailView.as_view(), name='library_detail'),  # class-based view
 
-    # --- Task 2: User Authentication URLs ---
-    path('login/', auth_views.LoginView.as_view(template_name='relationship_app/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='relationship_app/logout.html'), name='logout'),
-    path('register/', views.register_view, name='register'),
+    # role-based views
+    path('role/admin/', admin_view, name='admin_view'),
+    path('role/librarian/', librarian_view, name='librarian_view'),
+    path('role/member/', member_view, name='member_view'),
 
-    # --- Task 3: Role-Based Access Control URLs ---
-    path('admin_area/', views.admin_view, name='admin_view'),
-    path('librarian_desk/', views.librarian_view, name='librarian_desk'),
-    path('member_dashboard/', views.member_view, name='member_dashboard'),
-    
-    # --- Task 4: Custom Permissions URLs (STRICT PATH STRINGS REQUIRED) ---
-    
-    # Check 1: Must contain "add_book/"
-    path('books/add_book/', views.book_add_view, name='book_add'),
-    
-    # Check 2: Must contain "edit_book/"
-    path('books/edit_book/<int:pk>/', views.book_edit_view, name='book_edit'),
-    
-    # Check 3: Must contain "delete_book/"
-    path('books/delete_book/<int:pk>/', views.book_delete_view, name='book_delete'),
+    # book management (permissions)
+    path('book/add/', views.add_book, name='add_book'),
+    path('book/<int:pk>/edit/', views.edit_book, name='edit_book'),
+    path('book/<int:pk>/delete/', views.delete_book, name='delete_book'),
+    path('accounts/register/', auth_views.register_view, name='register'),
+    path('accounts/login/', auth_views.login_view, name='login'),
+    path('accounts/logout/', auth_views.logout_view, name='logout'),
 ]
