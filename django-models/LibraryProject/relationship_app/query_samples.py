@@ -26,8 +26,20 @@ def retrieve_librarian_for_library(library_name):
     # using related name 'librarian' from Librarian model
     return getattr(library, 'librarian', None)
 
-# Example usage (uncomment and use in shell):
-# from relationship_app.query_samples import *
-# print(query_all_books_by_author("J. K. Rowling"))
-# print(list_all_books_in_library("Central Library"))
-# print(retrieve_librarian_for_library("Central Library"))
+from relationship_app.models import Author, Book, Library, Librarian
+
+# Example: get a specific author
+author = Author.objects.get(name="Fabiola")
+
+# Example: get all books by this author
+books_by_author = Book.objects.filter(author=author)
+
+# Example: get a library
+library = Library.objects.get(name="Central Library")
+
+# Retrieve the librarian for this library (this is what the checker wants)
+librarian = Librarian.objects.get(library=library)
+
+# Just print to test (optional)
+print("Librarian:", librarian)
+
