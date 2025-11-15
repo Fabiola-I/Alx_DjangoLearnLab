@@ -10,14 +10,12 @@ from pathlib import Path
 # ==========================================================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-c)i27y*#&!p%h^h+h7tq39v^o#y-s0$g^!g^p_g^#h'  # Replace in production
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  # Set to False for production
+DEBUG = False  # Required by ALX for security tasks
 
-# Update with your domain names in production
-ALLOWED_HOSTS = ['yourdomain.com', 'www.yourdomain.com']
+ALLOWED_HOSTS = ['yourdomain.com', 'www.yourdomain.com', 'localhost']
+
 
 # ==========================================================
 # --- APPLICATION DEFINITION ---
@@ -31,12 +29,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Local Apps
+    'bookshelf',              # <-- IMPORTANT (CustomUser lives here)
     'relationship_app',
 
-    # Celery (Task Queue)
+    # Celery
     'django_celery_results',
 
-    # Two-Factor Authentication (2FA)
+    # 2FA
     'two_factor',
     'django_otp',
     'django_otp.plugins.otp_static',
@@ -44,23 +43,34 @@ INSTALLED_APPS = [
     'django_otp.plugins.otp_email',
 ]
 
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+
+    # NEW — Required for HTTPS security & session handling
     'django.contrib.sessions.middleware.SessionMiddleware',
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_otp.middleware.OTPMiddleware',  # OTP/2FA Middleware
+    'django_otp.middleware.OTPMiddleware',
+
+    # CSP middleware (required for secure headers)
+    'bookshelf.middleware.CSPMiddleware',
+
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
 ROOT_URLCONF = 'LibraryProject.urls'
+
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],  # optional but helpful
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,7 +83,9 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'LibraryProject.wsgi.application'
+
 
 # ==========================================================
 # --- DATABASE CONFIGURATION ---
@@ -85,23 +97,17 @@ DATABASES = {
     }
 }
 
+
 # ==========================================================
 # --- PASSWORD VALIDATION ---
 # ==========================================================
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
+
 
 # ==========================================================
 # --- INTERNATIONALIZATION ---
@@ -111,21 +117,26 @@ TIME_ZONE = 'Africa/Kigali'
 USE_I18N = True
 USE_TZ = True
 
+
 # ==========================================================
-# --- STATIC FILES ---
+# --- STATIC & MEDIA FILES ---
 # ==========================================================
 STATIC_URL = 'static/'
 
-# Default primary key field type
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ==========================================================
-# --- CUSTOM USER MODEL ---
-# ==========================================================
-AUTH_USER_MODEL = 'relationship_app.CustomUser'
 
 # ==========================================================
-# --- CACHING CONFIGURATION (Local Memory) ---
+# --- CUSTOM USER MODEL (Required) ---
+# ==========================================================
+AUTH_USER_MODEL = 'bookshelf.CustomUser'   # <-- Correct & final
+
+
+# ==========================================================
+# --- CACHING CONFIGURATION ---
 # ==========================================================
 CACHES = {
     'default': {
@@ -134,32 +145,25 @@ CACHES = {
     }
 }
 
-# ==========================================================
-# --- SECURITY BEST PRACTICES (HTTPS) ---
-# ==========================================================
-# Enforce HTTPS
-SECURE_SSL_REDIRECT = True
 
-# HTTP Strict Transport Security (HSTS)
-SECURE_HSTS_SECONDS = 31536000  # 1 year
+# ==========================================================
+# --- SECURITY CONFIGURATION (HTTPS + Hardening) ---
+# ==========================================================
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
-# Secure cookies
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
-# Prevent clickjacking
 X_FRAME_OPTIONS = 'DENY'
-
-# Prevent MIME type sniffing
 SECURE_CONTENT_TYPE_NOSNIFF = True
-
-# Enable browser XSS protection
 SECURE_BROWSER_XSS_FILTER = True
 
+
 # ==========================================================
-# --- CELERY CONFIGURATION (Task Queue) ---
+# --- CELERY CONFIGURATION ---
 # ==========================================================
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
 CELERY_RESULT_BACKEND = 'django-db'
@@ -167,8 +171,9 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
+
 # ==========================================================
-# --- 2FA (Two-Factor Authentication) CONFIGURATION ---
+# --- 2FA CONFIGURATION ---
 # ==========================================================
 AUTHENTICATION_BACKENDS = [
     'two_factor.backends.TwoFactorAuthBackend',
@@ -179,4 +184,4 @@ LOGIN_URL = 'two_factor:login'
 LOGIN_REDIRECT_URL = '/'
 TWO_FACTOR_REQUIRED_ADMIN = True
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Local testing
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

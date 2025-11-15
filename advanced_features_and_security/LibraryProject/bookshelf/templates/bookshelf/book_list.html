@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Books</h1>
+  <a href="{% url 'bookshelf:add_book' %}">Add book</a>
+  <ul>
+    {% for b in books %}
+      <li>{{ b.title|escape }} — {{ b.author|escape }} — owner: {{ b.owner.username|escape }}
+        <a href="{% url 'bookshelf:edit_book' b.pk %}">edit</a>
+      </li>
+    {% empty %}
+      <li>No books</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

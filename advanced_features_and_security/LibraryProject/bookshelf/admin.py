@@ -1,11 +1,30 @@
 from django.contrib import admin
-from .models import Book
+from django.contrib.auth.admin import UserAdmin
+from .models import CustomUser, Book
+from django.utils.translation import gettext_lazy as _
 
-# Custom admin configuration
+@admin.register(CustomUser)
+class CustomUserAdmin(UserAdmin):
+    model = CustomUser
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'date_of_birth', 'profile_photo')}),
+        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+    )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'password1', 'password2'),
+        }),
+    )
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
+    search_fields = ('username', 'email', 'first_name', 'last_name')
+    ordering = ('username',)
+
+
+@admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author', 'publication_year')  # columns to display
-    search_fields = ('title', 'author')                    # search by title/author
-    list_filter = ('publication_year',)                   # filter by year
-
-# Register the model with the custom admin
-admin.site.register(Book, BookAdmin)
+    list_display = ('title', 'author', 'owner', 'created_at')
+    list_filter = ('owner',)
+    search_fields = ('title', 'author')
