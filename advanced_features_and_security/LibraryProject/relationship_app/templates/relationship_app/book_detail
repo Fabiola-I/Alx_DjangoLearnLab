@@ -1,0 +1,14 @@
+{% extends "base.html" %} 
+
+{% block content %}
+    <div class="container">
+        <h1>Book Detail: {{ book.title }}</h1>
+        <p><strong>Author:</strong> {{ book.author.name }}</p>
+        <p><strong>Publication Year:</strong> {{ book.publication_year }}</p>
+        <p>This is the detail view of the book.</p>
+        
+        {% if perms.relationship_app.can_edit %}
+            <a href="{% url 'relationship_app:edit_book' book.pk %}" class="btn btn-warning">Edit Book</a>
+        {% endif %}
+    </div>
+{% endblock content %}
