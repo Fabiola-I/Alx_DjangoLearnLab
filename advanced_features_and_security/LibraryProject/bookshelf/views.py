@@ -3,6 +3,9 @@ from django.contrib.auth.decorators import permission_required, login_required
 from .models import Book
 from .forms import BookForm
 from django.http import HttpResponseForbidden
+# LibraryProject/bookshelf/views.py
+from django.shortcuts import render, redirect
+from .forms import ExampleForm   # ✅ Add this line
 
 
 @permission_required('bookshelf.can_view', raise_exception=True)
