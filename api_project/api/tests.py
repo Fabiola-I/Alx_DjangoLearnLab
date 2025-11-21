@@ -1,3 +1,6 @@
 from django.test import TestCase
 
-# Create your tests here.
+# Placeholder - you can add tests if needed for local verification.
+class SimpleTest(TestCase):
+    def test_true(self):
+        self.assertTrue(True)
