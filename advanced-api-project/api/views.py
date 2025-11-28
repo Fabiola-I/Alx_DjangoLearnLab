@@ -1,66 +1,76 @@
-# api/views.py
-from rest_framework import generics, permissions, filters
-from django_filters.rest_framework import DjangoFilterBackend
-from .models import Book, Author
-from .serializers import BookSerializer, AuthorSerializer
+from rest_framework import generics, permissions
+from .models import Book
+from .serializers import BookSerializer
 
 # ---------------------------
-# Book Views
+# List all books
 # ---------------------------
-
-class BookListCreateView(generics.ListCreateAPIView):
+class BookListView(generics.ListAPIView):
     """
-    GET: list all books (supports filtering/search/ordering)
-    POST: create a new book (authenticated users only)
+    GET /books/
+    Retrieve all books.
+    Access: Public (AllowAny)
     """
-    queryset = Book.objects.select_related('author').all()
+    queryset = Book.objects.all()
     serializer_class = BookSerializer
+    permission_classes = [permissions.AllowAny]
 
-    # Use filter backends to enable filtering, search, ordering
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-
-    # Fields for exact filtering (via ?field=value)
-    filterset_fields = ['title', 'publication_year', 'author', 'author__name']
-
-    # Search fields for text search (via ?search=term)
-    search_fields = ['title', 'author__name']
-
-    # Ordering fields (via ?ordering=field or ?ordering=-field)
-    ordering_fields = ['title', 'publication_year', 'id']
-    ordering = ['title']  # default ordering
-
-
-class BookDetailView(generics.RetrieveUpdateDestroyAPIView):
+# ---------------------------
+# Retrieve a single book by ID
+# ---------------------------
+class BookDetailView(generics.RetrieveAPIView):
     """
-    GET: retrieve a single book
-    PUT/PATCH: update an existing book (authenticated)
-    DELETE: delete a book (authenticated)
+    GET /books/<int:pk>/
+    Retrieve details of a single book by its ID.
+    Access: Public (AllowAny)
     """
-    queryset = Book.objects.select_related('author').all()
+    queryset = Book.objects.all()
     serializer_class = BookSerializer
-    # Permission class inherited from REST_FRAMEWORK default IsAuthenticatedOrReadOnly
-
+    permission_classes = [permissions.AllowAny]
 
 # ---------------------------
-# Author Views
+# Create a new book
 # ---------------------------
+class BookCreateView(generics.CreateAPIView):
+    """
+    POST /books/create/
+    Create a new book entry.
+    Access: Authenticated users only.
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-class AuthorListCreateView(generics.ListCreateAPIView):
-    """
-    GET: list authors
-    POST: create author (authenticated)
-    """
-    queryset = Author.objects.prefetch_related('books').all()
-    serializer_class = AuthorSerializer
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['name']
-    ordering_fields = ['name']
-    ordering = ['name']
+    # Customize behavior if needed (e.g., auto-assign fields)
+    def perform_create(self, serializer):
+        serializer.save()
 
+# ---------------------------
+# Update an existing book
+# ---------------------------
+class BookUpdateView(generics.UpdateAPIView):
+    """
+    PUT/PATCH /books/update/<int:pk>/
+    Update a book's details.
+    Access: Authenticated users only.
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-class AuthorDetailView(generics.RetrieveUpdateDestroyAPIView):
+    # Customize behavior if needed (e.g., logging updates)
+    def perform_update(self, serializer):
+        serializer.save()
+
+# ---------------------------
+# Delete a book
+# ---------------------------
+class BookDeleteView(generics.DestroyAPIView):
     """
-    Author detail (GET), update (PUT/PATCH), delete (DELETE)
+    DELETE /books/delete/<int:pk>/
+    Delete a book entry.
+    Access: Authenticated users only.
     """
-    queryset = Author.objects.prefetch_related('books').all()
-    serializer_class = AuthorSerializer
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [permissions.IsAuthenticated]
