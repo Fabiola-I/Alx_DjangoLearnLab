@@ -3,6 +3,12 @@ from rest_framework import generics, permissions, filters
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Book, Author
 from .serializers import BookSerializer, AuthorSerializer
+from rest_framework import generics, filters
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from django_filters.rest_framework import DjangoFilterBackend
+
+from .models import Book, Author
+from .serializers import BookSerializer, AuthorSerializer
 
 # ----------------------
 # Book views
