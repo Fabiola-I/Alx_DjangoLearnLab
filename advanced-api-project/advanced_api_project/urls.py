@@ -1,8 +1,7 @@
-# advanced_api_project/urls.py
 from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('api.urls')),  # API root: /api/books/ etc.
+    path('api/', include('api.urls')),  # <-- add this line
 ]
