@@ -1,12 +1,7 @@
 # api/views.py
-from rest_framework import generics, permissions, filters
-from django_filters.rest_framework import DjangoFilterBackend
-from .models import Book, Author
-from .serializers import BookSerializer, AuthorSerializer
 from rest_framework import generics, filters
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
-
 from .models import Book, Author
 from .serializers import BookSerializer, AuthorSerializer
 
@@ -23,13 +18,13 @@ class BookListView(generics.ListAPIView):
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.AllowAny]  # anyone can view list
+    permission_classes = [IsAuthenticatedOrReadOnly]  # anyone can read, auth required for write
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['title', 'publication_year', 'author']
     search_fields = ['title', 'author__name']
     ordering_fields = ['title', 'publication_year']
-    ordering = ['title']  # default ordering
+    ordering = ['title']
 
 
 class BookDetailView(generics.RetrieveAPIView):
@@ -38,7 +33,7 @@ class BookDetailView(generics.RetrieveAPIView):
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.AllowAny]  # anyone can view details
+    permission_classes = [IsAuthenticatedOrReadOnly]  # read-only for everyone
 
 
 class BookCreateView(generics.CreateAPIView):
@@ -48,27 +43,27 @@ class BookCreateView(generics.CreateAPIView):
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
 
 class BookUpdateView(generics.UpdateAPIView):
     """
     PUT /api/books/<pk>/update/ -> update book
-    Requires admin permission.
+    Requires authentication.
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAdminUser]  # only admin can update
+    permission_classes = [IsAuthenticated]
 
 
 class BookDeleteView(generics.DestroyAPIView):
     """
     DELETE /api/books/<pk>/delete/ -> delete book
-    Requires admin permission.
+    Requires authentication.
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAdminUser]  # only admin can delete
+    permission_classes = [IsAuthenticated]
 
 
 # ----------------------
@@ -80,7 +75,7 @@ class AuthorListView(generics.ListAPIView):
     """
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class AuthorDetailView(generics.RetrieveAPIView):
@@ -89,4 +84,4 @@ class AuthorDetailView(generics.RetrieveAPIView):
     """
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
