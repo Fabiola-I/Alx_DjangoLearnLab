@@ -1,0 +1,25 @@
+{% extends "blog/base.html" %}
+{% block content %}
+<h2>{{ object.title }}</h2>
+<p>{{ object.content }}</p>
+<p>By {{ object.author.username }} on {{ object.published_date }}</p>
+<p>Tags: {% for tag in object.tags.all %} {{ tag.name }} {% endfor %}</p>
+
+<h3>Comments</h3>
+<ul>
+    {% for comment in object.comments.all %}
+        <li>{{ comment.author.username }}: {{ comment.content }}</li>
+    {% empty %}
+        <li>No comments yet.</li>
+    {% endfor %}
+</ul>
+
+{% if user.is_authenticated %}
+    <a href="{% url 'add-comment' object.pk %}">Add Comment</a>
+{% endif %}
+
+{% if object.author == user %}
+    <a href="{% url 'post-edit' object.pk %}">Edit</a>
+    <a href="{% url 'post-delete' object.pk %}">Delete</a>
+{% endif %}
+{% endblock %}
