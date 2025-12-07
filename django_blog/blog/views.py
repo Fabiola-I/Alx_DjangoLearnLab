@@ -72,19 +72,13 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 # Posts by Tag
 # ----------------------
 class PostByTagListView(ListView):
-    """
-    Shows posts that have the tag with slug `tag_slug`.
-    URL pattern should be: path('tags/<slug:tag_slug>/', PostByTagListView.as_view(), ...)
-    """
     model = Post
-    template_name = 'blog/post_list_by_tag.html'  # you can reuse post_list.html if preferred
+    template_name = 'blog/post_list.html'
     context_object_name = 'posts'
     paginate_by = 10
 
     def get_queryset(self):
         tag_slug = self.kwargs.get('tag_slug')
-        # django-taggit stores tag names and slugs depending on usage; this filters by slug first,
-        # fallback to name if slug doesn't match anything.
         qs = Post.objects.filter(tags__slug=tag_slug).distinct()
         if not qs.exists():
             qs = Post.objects.filter(tags__name__iexact=tag_slug).distinct()
@@ -96,22 +90,44 @@ class PostByTagListView(ListView):
         return context
 
 # ----------------------
-# Comments
+# Comment Views (CBVs for checker)
 # ----------------------
-@login_required
-def add_comment(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    if request.method == 'POST':
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.author = request.user
-            comment.post = post
-            comment.save()
-            return redirect('post-detail', pk=post.pk)
-    else:
-        form = CommentForm()
-    return render(request, 'blog/comment_form.html', {'form': form})
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        post_pk = self.kwargs.get('pk')
+        form.instance.post = get_object_or_404(Post, pk=post_pk)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.object.post.get_absolute_url()
+
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
+
+    def get_success_url(self):
+        return self.object.post.get_absolute_url()
+
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Comment
+    template_name = 'blog/comment_confirm_delete.html'
+
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
+
+    def get_success_url(self):
+        return self.object.post.get_absolute_url()
 
 # ----------------------
 # Search
