@@ -1,0 +1,14 @@
+{% extends "blog/base.html" %}
+{% block content %}
+  <h1>Posts with tag: {{ tag_slug }}</h1>
+
+  <ul>
+  {% for post in posts %}
+    <li><a href="{% url 'post-detail' post.pk %}">{{ post.title }}</a> — {{ post.author.username }}</li>
+  {% empty %}
+    <li>No posts for this tag.</li>
+  {% endfor %}
+  </ul>
+
+  <a href="{% url 'post-list' %}">Back to all posts</a>
+{% endblock %}
