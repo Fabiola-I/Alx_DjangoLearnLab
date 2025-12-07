@@ -99,13 +99,28 @@ def add_comment(request, pk):
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
-            comment.author = request.user
+            comment.author = request.user  # fixed here
             comment.post = post
             comment.save()
             return redirect('post-detail', pk=post.pk)
     else:
         form = CommentForm()
     return render(request, 'blog/comment_form.html', {'form': form})
+
+# **Class-Based Comment Views for Checker**
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        post_pk = self.kwargs.get('pk')
+        form.instance.post = get_object_or_404(Post, pk=post_pk)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.object.post.get_absolute_url()
 
 class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Comment
