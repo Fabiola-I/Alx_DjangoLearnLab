@@ -1,3 +1,5 @@
+# posts/views.py
+
 from rest_framework import viewsets, permissions
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
@@ -18,3 +20,10 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
+# --- Add this function so the import in urls.py works ---
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+@api_view(['GET'])
+def feed(request):
+    return Response({"message": "User feed endpoint placeholder"})
