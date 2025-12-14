@@ -73,6 +73,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'social_media_api.wsgi.application'
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 
 # Database
