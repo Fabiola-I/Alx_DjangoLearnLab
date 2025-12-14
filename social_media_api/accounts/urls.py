@@ -6,6 +6,8 @@ urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', obtain_auth_token, name='login'),
     path('users/', UserListView.as_view(), name='user-list'),
-    path('follow/<int:pk>/', FollowUserView.as_view(), name='follow-user'),
-    path('unfollow/<int:pk>/', UnfollowUserView.as_view(), name='unfollow-user'),
+
+    # 🔴 ALX requires user_id (NOT pk)
+    path('follow/<int:user_id>/', FollowUserView.as_view(), name='follow-user'),
+    path('unfollow/<int:user_id>/', UnfollowUserView.as_view(), name='unfollow-user'),
 ]
