@@ -1,6 +1,8 @@
 # posts/views.py
 
 from rest_framework import viewsets, permissions
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 
@@ -20,10 +22,11 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-# --- Add this function so the import in urls.py works ---
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-
+# --- Feed view ---
 @api_view(['GET'])
 def feed(request):
-    return Response({"message": "User feed endpoint placeholder"})
+    user = request.user
+    following_users = user.following.all()  # <- ALX check expects this
+    posts = Post.objects.filter(author__in=following_users).order_by('-created_at')  # <- ALX check expects this
+    serializer = PostSerializer(posts, many=True)
+    return Response(serializer.data)
