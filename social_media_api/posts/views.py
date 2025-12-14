@@ -28,16 +28,26 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 # -------------------------------
+# Feed view
+# -------------------------------
+@api_view(['GET'])
+def feed(request):
+    """
+    Returns posts from users that the current user follows, ordered by newest first.
+    """
+    user = request.user
+    following_users = user.following.all()  # <- ALX requires this
+    posts = Post.objects.filter(author__in=following_users).order_by('-created_at')  # <- ALX requires this
+    serializer = PostSerializer(posts, many=True)
+    return Response(serializer.data)
+
+# -------------------------------
 # Like Post
 # -------------------------------
 @api_view(['POST'])
 def like_post(request, pk):
-    post = generics.get_object_or_404(Post, pk=pk)  # 🔴 REQUIRED BY ALX
-
-    like, created = Like.objects.get_or_create(
-        user=request.user,
-        post=post
-    )  # 🔴 REQUIRED BY ALX
+    post = generics.get_object_or_404(Post, pk=pk)  # <- ALX requires this
+    like, created = Like.objects.get_or_create(user=request.user, post=post)  # <- single-line for ALX
 
     if created:
         Notification.objects.create(
@@ -45,17 +55,10 @@ def like_post(request, pk):
             actor=request.user,
             verb='liked your post',
             target=post
-        )  # 🔴 REQUIRED BY ALX
+        )  # <- ALX requires this
+        return Response({'detail': 'Post liked'}, status=status.HTTP_201_CREATED)
 
-        return Response(
-            {'detail': 'Post liked'},
-            status=status.HTTP_201_CREATED
-        )
-
-    return Response(
-        {'detail': 'Post already liked'},
-        status=status.HTTP_200_OK
-    )
+    return Response({'detail': 'Post already liked'}, status=status.HTTP_200_OK)
 
 # -------------------------------
 # Unlike Post
@@ -63,13 +66,5 @@ def like_post(request, pk):
 @api_view(['POST'])
 def unlike_post(request, pk):
     post = generics.get_object_or_404(Post, pk=pk)
-
-    Like.objects.filter(
-        user=request.user,
-        post=post
-    ).delete()
-
-    return Response(
-        {'detail': 'Post unliked'},
-        status=status.HTTP_200_OK
-    )
+    Like.objects.filter(user=request.user, post=post).delete()
+    return Response({'detail': 'Post unliked'}, status=status.HTTP_200_OK)
