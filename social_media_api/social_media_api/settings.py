@@ -113,6 +113,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
